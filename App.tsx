@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal, ScrollView, Alert, TouchableWithoutFeedback } from 'react-native';
 import SQLite from 'react-native-sqlite-storage';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Importing icons for better UI
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-// Define the type for a history item
 type HistoryItem = {
   id: number;
   expression: string;
   result: string;
 };
 
-// Open the SQLite database
 const db = SQLite.openDatabase(
   {
     name: 'calculator_history.db',
@@ -34,7 +32,7 @@ export default function App() {
   const maxSegmentLength = 20;
 
   const createTable = () => {
-    db.transaction((tx: SQLite.Transaction) => {
+    db.transaction((tx) => {
       tx.executeSql(
         `CREATE TABLE IF NOT EXISTS calculation_history (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,7 +42,7 @@ export default function App() {
         );`,
         [],
         () => console.log('Table created successfully'),
-        (error: any) => console.error('Error creating table:', error)
+        (error) => console.error('Error creating table:', error)
       );
     });
   };
@@ -55,7 +53,7 @@ export default function App() {
   }, []);
 
   const insertCalculation = (expression: string, result: string): void => {
-    db.transaction((tx: SQLite.Transaction) => {
+    db.transaction((tx) => {
       tx.executeSql(
         'INSERT INTO calculation_history (expression, result) VALUES (?, ?)',
         [expression, result],
@@ -63,17 +61,17 @@ export default function App() {
           console.log('Data inserted successfully');
           fetchHistory();
         },
-        (error: any) => console.error('Error inserting data:', error)
+        (error) => console.error('Error inserting data:', error)
       );
     });
   };
 
   const fetchHistory = () => {
-    db.transaction((tx: SQLite.Transaction) => {
+    db.transaction((tx) => {
       tx.executeSql(
         'SELECT * FROM calculation_history ORDER BY timestamp DESC',
         [],
-        (tx: SQLite.Transaction, results: SQLite.ResultSet) => {
+        (tx, results) => {
           let fetchedHistory: HistoryItem[] = [];
           for (let i = 0; i < results.rows.length; i++) {
             const item = results.rows.item(i);
@@ -81,7 +79,7 @@ export default function App() {
           }
           setHistory(fetchedHistory);
         },
-        (error: any) => console.error('Error fetching data:', error)
+        (error) => console.error('Error fetching data:', error)
       );
     });
   };
@@ -90,7 +88,6 @@ export default function App() {
     let newExpression = expression;
     let match;
 
-    // Insert multiplication before '√' if there's a number right before it.
     newExpression = newExpression.replace(/(\d)(√)/g, '$1*√');
 
     while ((match = newExpression.match(/√+/))) {
@@ -117,7 +114,7 @@ export default function App() {
       }
     }
 
-    newExpression = newExpression.replace(/\÷/g, '/');
+    newExpression = newExpression.replace(/÷/g, '/');
     return newExpression;
   };
 
@@ -141,7 +138,7 @@ export default function App() {
       return;
     }
     if (buttonText === '.') {
-      const lastNumber = currentExpression.split(/[+\-*÷]/).pop();
+      const lastNumber = currentExpression.split(/[+\-*\÷]/).pop();
       if (lastNumber?.includes('.')) {
         return;
       }
@@ -190,9 +187,18 @@ export default function App() {
     } else if (buttonText === '⌫') {
       if (currentExpression.length > 1) {
         const updatedExpression = currentExpression.slice(0, -1);
+
         setCurrentExpression(updatedExpression);
         setDisplayText(updatedExpression);
-        updateLastValidResult(updatedExpression);
+
+        try {
+          const result = calculateResult(updatedExpression);
+          if (result !== 'Error') {
+            setLastValidResult(result);
+          }
+        } catch {
+          // Ignore errors for intermediate states
+        }
       } else {
         setCurrentExpression('0');
         setDisplayText('0');
@@ -288,8 +294,8 @@ export default function App() {
         {
           text: 'Yes',
           onPress: () => {
-            db.transaction((tx: SQLite.Transaction) => {
-              selectedItems.forEach(id => {
+            db.transaction((tx) => {
+              selectedItems.forEach((id) => {
                 tx.executeSql('DELETE FROM calculation_history WHERE id = ?', [id], () => {
                   console.log(`Deleted item with id ${id}`);
                 });
@@ -317,7 +323,7 @@ export default function App() {
         {
           text: 'Yes',
           onPress: () => {
-            db.transaction((tx: SQLite.Transaction) => {
+            db.transaction((tx) => {
               tx.executeSql('DELETE FROM calculation_history', [], () => {
                 console.log('Deleted all history');
               });
@@ -400,7 +406,7 @@ export default function App() {
                     ]}
                     onPress={() => {
                       if (selectedItems.includes(item.id)) {
-                        setSelectedItems(selectedItems.filter(i => i !== item.id));
+                        setSelectedItems(selectedItems.filter((i) => i !== item.id));
                       } else {
                         setSelectedItems([...selectedItems, item.id]);
                       }
@@ -421,7 +427,7 @@ export default function App() {
                   <TouchableOpacity
                     style={styles.recalculateButton}
                     onPress={() => {
-                      const selectedItem = history.find(item => item.id === selectedItems[0]);
+                      const selectedItem = history.find((item) => item.id === selectedItems[0]);
                       if (selectedItem) {
                         setCurrentExpression(selectedItem.expression);
                         setDisplayText(selectedItem.expression);
@@ -498,7 +504,7 @@ const styles = StyleSheet.create({
   menuContainer: {
     position: 'absolute',
     top: 60,
-    right: 25,
+    right: 15,
     backgroundColor: '#ffffff',
     borderRadius: 8,
     elevation: 5,
