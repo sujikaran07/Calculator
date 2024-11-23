@@ -1,5 +1,7 @@
+//IM-2021-119 M.Sujikaran
+
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Modal, ScrollView, Alert, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Modal, ScrollView, Alert, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import SQLite from 'react-native-sqlite-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -29,7 +31,7 @@ export default function App() {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
 
   const operators = ['+', '-', '*', '÷'];
-  const maxSegmentLength = 20;
+  const maxSegmentLength = 16;
 
   const createTable = () => {
     db.transaction((tx) => {
@@ -138,7 +140,7 @@ export default function App() {
       return;
     }
     if (buttonText === '.') {
-      const lastNumber = currentExpression.split(/[+\-*\÷]/).pop();
+      const lastNumber = currentExpression.split(/[+\-*÷]/).pop();
       if (lastNumber?.includes('.')) {
         return;
       }
@@ -216,20 +218,22 @@ export default function App() {
       }
       setIsFinalResultDisplayed(false);
     } else {
+      const lastSegment = currentExpression.split(/[+\-*÷]/).pop() || '';
+      if (lastSegment.length >= maxSegmentLength && !operators.includes(buttonText)) {
+        return;
+      }
+
       if (isFinalResultDisplayed) {
         if (operators.includes(buttonText)) {
-          setCurrentExpression(displayText + buttonText);
-          setDisplayText(displayText + buttonText);
+          setCurrentExpression(displayText + '\n' + buttonText);
+          setDisplayText(displayText + '\n' + buttonText);
         } else {
           setCurrentExpression(buttonText);
           setDisplayText(buttonText);
         }
         setIsFinalResultDisplayed(false);
       } else {
-        if (currentExpression.length >= maxSegmentLength && operators.includes(buttonText)) {
-          setCurrentExpression(currentExpression + buttonText);
-          setDisplayText(currentExpression + buttonText);
-        } else if (currentExpression === '0' && !operators.includes(buttonText)) {
+        if (currentExpression === '0' && !operators.includes(buttonText)) {
           setCurrentExpression(buttonText);
           setDisplayText(buttonText);
           setLastValidResult(buttonText);
@@ -240,7 +244,12 @@ export default function App() {
           setCurrentExpression(currentExpression + buttonText);
           setDisplayText(currentExpression + buttonText);
         } else {
-          const updatedExpression = currentExpression + buttonText;
+          let updatedExpression;
+          if (lastSegment.length >= maxSegmentLength && operators.includes(buttonText)) {
+            updatedExpression = currentExpression + '\n' + buttonText;
+          } else {
+            updatedExpression = currentExpression + buttonText;
+          }
           setCurrentExpression(updatedExpression);
           setDisplayText(updatedExpression);
           updateLastValidResult(updatedExpression);
@@ -277,8 +286,9 @@ export default function App() {
 
   const getDisplayFontSize = () => {
     const totalLength = displayText.length;
-    if (totalLength > 50) return 18;
-    if (totalLength > 30) return 24;
+    if (totalLength > 90) return 14;
+    if (totalLength > 60) return 18;
+    if (totalLength > 40) return 24;
     return 32;
   };
 
@@ -499,7 +509,7 @@ const styles = StyleSheet.create({
   moreOptionsButtonContainer: {
     position: 'absolute',
     top: 10,
-    right: 20,
+    right: 10,
   },
   menuContainer: {
     position: 'absolute',

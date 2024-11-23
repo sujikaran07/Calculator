@@ -30,10 +30,10 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file("path/to/release-key.keystore")
-            storePassword "your-store-password"
-            keyAlias "your-key-alias"
-            keyPassword "your-key-password"
+            storeFile file('release-key.keystore') // Make sure the file is here
+            storePassword 'Suji2002#@'            // Keystore password
+            keyAlias 'release-key'               // Key alias
+            keyPassword 'Suji2002#@'             // Key alias password
         }
     }
     buildTypes {
@@ -52,7 +52,6 @@ dependencies {
     implementation("com.facebook.react:react-android")
     implementation project(':react-native-vector-icons')
     apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
-
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
