@@ -199,7 +199,7 @@ export default function App() {
             setLastValidResult(result);
           }
         } catch {
-          // Ignore errors for intermediate states
+
         }
       } else {
         setCurrentExpression('0');
@@ -278,7 +278,7 @@ export default function App() {
       ]}
       onPress={() => buttonPressed(buttonText)}
     >
-      <Text style={[styles.buttonText, buttonText === '=' ? styles.equalButtonText : null]}>
+      <Text style={[styles.buttonText, buttonText === '=' ? styles.equalButtonText : null, { fontWeight: 'bold' }]}> {/* Set button text as bold */}
         {buttonText}
       </Text>
     </TouchableOpacity>
@@ -352,9 +352,13 @@ export default function App() {
     <TouchableWithoutFeedback onPress={() => setMenuVisible(false)}>
       <View style={styles.container}>
         <View style={styles.displayContainer}>
-          <Text style={[styles.displayText, { fontSize: getDisplayFontSize() }]}> {displayText} </Text>
+          <Text style={[styles.displayText, { fontSize: getDisplayFontSize(), fontWeight: 'bold' }]}> {}
+            {displayText}
+          </Text>
           {!isFinalResultDisplayed && lastValidResult && (
-            <Text style={[styles.displayText, { fontSize: getDisplayFontSize() - 4 }]}> = {lastValidResult} </Text>
+            <Text style={[styles.displayText, { fontSize: getDisplayFontSize() - 4, fontWeight: 'bold' }]}> {}
+              = {lastValidResult}
+            </Text>
           )}
         </View>
         <View style={styles.moreOptionsButtonContainer}>
@@ -372,7 +376,9 @@ export default function App() {
                 fetchHistory();
               }}
             >
-              <Text style={styles.menuItemText}>History</Text>
+              <Text style={[styles.menuItemText, { fontWeight: 'bold' }]}> {/* Set menu item text as bold */}
+                History
+              </Text>
             </TouchableOpacity>
           </View>
         )}
@@ -398,11 +404,17 @@ export default function App() {
                 setIsHistoryVisible(false);
                 setSelectedItems([]);
               }}>
-                <Text style={styles.backButton}>&#8592;</Text>
+                <Text style={[styles.backButton, { fontWeight: 'bold' }]}> {}
+                  &#8592;
+                </Text>
               </TouchableOpacity>
-              <Text style={styles.historyTitle}>History</Text>
+              <Text style={[styles.historyTitle, { fontWeight: 'bold' }]}> {}
+                History
+              </Text>
               <TouchableOpacity onPress={handleDeleteAllItems}>
-                <Text style={styles.deleteButton}>&#128465;</Text>
+                <Text style={[styles.deleteButton, { fontWeight: 'bold' }]}> {}
+                  &#128465;
+                </Text>
               </TouchableOpacity>
             </View>
             <ScrollView>
@@ -422,12 +434,18 @@ export default function App() {
                       }
                     }}
                   >
-                    <Text style={styles.historyDate}>{new Date().toLocaleDateString()}</Text>
-                    <Text style={styles.historyItem}>{item.expression} = {item.result}</Text>
+                    <Text style={[styles.historyDate, { fontWeight: 'bold' }]}> {}
+                      {new Date().toLocaleDateString()}
+                    </Text>
+                    <Text style={[styles.historyItem, { fontWeight: 'bold' }]}> {}
+                      {item.expression} = {item.result}
+                    </Text>
                   </TouchableOpacity>
                 ))
               ) : (
-                <Text style={styles.historyItem}>No History Available</Text>
+                <Text style={[styles.historyItem, { fontWeight: 'bold' }]}> {}
+                  No History Available
+                </Text>
               )}
             </ScrollView>
 
@@ -446,14 +464,18 @@ export default function App() {
                       }
                     }}
                   >
-                    <Text style={styles.recalculateButtonText}>Recalculate</Text>
+                    <Text style={[styles.recalculateButtonText, { fontWeight: 'bold' }]}> {}
+                      Recalculate
+                    </Text>
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
                   style={styles.deleteSelectedButton}
                   onPress={handleDeleteSelectedItems}
                 >
-                  <Text style={styles.deleteButtonText}>Delete Selected</Text>
+                  <Text style={[styles.deleteButtonText, { fontWeight: 'bold' }]}> {}
+                    Delete Selected
+                  </Text>
                 </TouchableOpacity>
               </View>
             )}
