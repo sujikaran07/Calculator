@@ -278,7 +278,7 @@ export default function App() {
       ]}
       onPress={() => buttonPressed(buttonText)}
     >
-      <Text style={[styles.buttonText, buttonText === '=' ? styles.equalButtonText : null, { fontWeight: 'bold' }]}> {/* Set button text as bold */}
+      <Text style={[styles.buttonText, buttonText === '=' ? styles.equalButtonText : null, { fontWeight: 'bold' }]}> 
         {buttonText}
       </Text>
     </TouchableOpacity>
@@ -376,7 +376,7 @@ export default function App() {
                 fetchHistory();
               }}
             >
-              <Text style={[styles.menuItemText, { fontWeight: 'bold' }]}> {/* Set menu item text as bold */}
+              <Text style={[styles.menuItemText, { fontWeight: 'bold' }]}>
                 History
               </Text>
             </TouchableOpacity>
